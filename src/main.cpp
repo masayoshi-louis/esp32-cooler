@@ -52,6 +52,9 @@ PID hotSidePID(&temperatureSensors.hotSide, &pumpOutput, &hotSideSetpoint, 50, 3
 PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 15, 30, 10, DIRECT);
 PID powerModuleFanPID(&temperatureSensors.powerModule, &powerModuleFanOutput, &powerModuleTemperatureSetpoint, 40, 30, 10, DIRECT);
 
+// other inputs
+float tecVoltages[2];
+
 uint8_t to256steps(double x)
 {
     return (uint8_t)max(0, min(255, x));
@@ -117,6 +120,11 @@ void checkErr()
     }
 }
 
+float readVoltage(uint8_t pin)
+{
+    return (float)analogRead(pin) / 1023 * 1.1 * TEC_V_SCALE;
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -144,6 +152,10 @@ void setup()
     SPI.begin();
     SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
 
+    // ADC
+    analogSetAttenuation(ADC_0db);
+    analogSetWidth(10);
+
     delay(3000);
     Serial.println("Started");
 }
@@ -158,6 +170,9 @@ void loop()
     env_sensor::loop();
     errMsg = env_sensor::getErr();
     checkErr();
+
+    tecVoltages[0] = readVoltage(TEC_V_CH1_PIN) * TEC_V_CH1_CAL;
+    tecVoltages[1] = readVoltage(TEC_V_CH2_PIN) * TEC_V_CH2_CAL;
 
     // adjust setpoints
     waterSetpoint = min(MAX_WATER_TEMPERATURE, temperatureSensors.outsideAir + SETPOINT_DELTA_T);

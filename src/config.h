@@ -13,6 +13,8 @@
 #define HEAT_SINK_FAN_PWM_PIN 0
 #define PUMP_PWM_PIN 0
 #define POWER_MODULE_FAN_PWM_PIN 0
+#define TEC_V_CH1_PIN 32
+#define TEC_V_CH2_PIN 33
 
 #define TEC_ENABLE_PIN 0
 
