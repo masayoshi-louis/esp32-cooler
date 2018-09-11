@@ -52,6 +52,9 @@ PID hotSidePID(&temperatureSensors.hotSide, &pumpOutput, &hotSideSetpoint, 50, 3
 PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 15, 30, 10, DIRECT);
 PID powerModuleFanPID(&temperatureSensors.powerModule, &powerModuleFanOutput, &powerModuleTemperatureSetpoint, 40, 30, 10, DIRECT);
 
+// other inputs
+float tecVoltages[2];
+
 uint8_t to256steps(double x)
 {
     return (uint8_t)max(0, min(255, x));
@@ -130,6 +133,11 @@ void checkErr()
     }
 }
 
+float readVoltage(uint8_t pin)
+{
+    return (float)adcEnd(pin) / 1023 * 1.1 * TEC_V_SCALE;
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -157,12 +165,22 @@ void setup()
     SPI.begin();
     SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
 
+    // ADC
+    analogSetAttenuation(ADC_0db);
+    analogSetWidth(10);
+    adcAttachPin(TEC_V_CH1_PIN);
+    adcAttachPin(TEC_V_CH2_PIN);
+
     delay(3000);
     Serial.println("Started");
 }
 
 void loop()
 {
+    // start async ADC
+    adcStart(TEC_V_CH1_PIN);
+    adcStart(TEC_V_CH2_PIN);
+
     // collect inputs
     temperatureSensors.loop();
     errMsg = temperatureSensors.getErr();
@@ -189,4 +207,8 @@ void loop()
     ledcWrite(PUMP_PWM_CH, pumpPWM);
     ledcWrite(HEAT_SINK_FAN_PWM_CH, heatSinkFanPWM);
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
+
+    // end async ADC
+    tecVoltages[0] = readVoltage(TEC_V_CH1_PIN) * TEC_V_CH1_CAL;
+    tecVoltages[1] = readVoltage(TEC_V_CH2_PIN) * TEC_V_CH2_CAL;
 }

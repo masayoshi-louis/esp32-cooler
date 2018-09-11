@@ -27,7 +27,7 @@ void loop()
 
 String getErr()
 {
-    if (dht.getStatus() == DHT::DHT_ERROR_t::ERROR_NONE)
+    if (dht.getStatus() == DHT::ERROR_NONE)
     {
         return String();
     }
