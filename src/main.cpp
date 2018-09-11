@@ -39,6 +39,7 @@ double powerModuleFanOutput;
 
 uint8_t coolerFanPWM;
 uint8_t tecPwrLv;
+bool tecEnabled;
 uint8_t pumpPWM;
 uint8_t heatSinkFanPWM;
 uint8_t powerModuleFanPWM;
@@ -79,6 +80,7 @@ void computeTecOutput()
 {
     coldSidePID.Compute();
     tecPwrLv = to256steps(-tecOutput);
+    tecEnabled = tecPwrLv > 0;
 }
 
 void computePowerModuleFanOutput()
@@ -87,7 +89,7 @@ void computePowerModuleFanOutput()
     powerModuleFanPWM = to256steps(-powerModuleFanOutput);
 }
 
-void writeTecPwr()
+void writeTec()
 {
     static uint16_t lastValue = 65535;
     if (abs(lastValue - tecPwrLv) > 4)
@@ -103,13 +105,14 @@ void writeTecPwr()
         digitalWrite(TEC_PWR_AD5262_SS_PIN, 1);
         lastValue = tecPwrLv;
     }
-    digitalWrite(TEC_ENABLE_PIN, tecPwrLv > 0);
+    digitalWrite(TEC_ENABLE_PIN, tecEnabled);
 }
 
 void checkErr()
 {
     if (errMsg.length() > 0)
     {
+        digitalWrite(TEC_ENABLE_PIN, LOW);
         exit(-1);
     }
 }
@@ -169,7 +172,7 @@ void loop()
 
     // write outputs
     ledcWrite(COOLER_FAN_PWM_CH, coolerFanPWM);
-    writeTecPwr();
+    writeTec();
     ledcWrite(PUMP_PWM_CH, pumpPWM);
     ledcWrite(HEAT_SINK_FAN_PWM_CH, heatSinkFanPWM);
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
