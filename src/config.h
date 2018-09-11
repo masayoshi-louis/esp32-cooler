@@ -40,4 +40,10 @@
         0x28, 0x8D, 0x7B, 0x4D, 0x0A, 0x00, 0x00, 0xB4 \
     }
 
+#define TEC_V_R1 51000.0
+#define TEC_V_R2 4700.0
+#define TEC_V_SCALE ((TEC_V_R1 + TEC_V_R2) / (TEC_V_R2))
+#define TEC_V_CH1_CAL 1.0
+#define TEC_V_CH2_CAL 1.0
+
 #endif
