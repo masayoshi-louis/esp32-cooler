@@ -16,6 +16,8 @@
 
 const uint8_t TEC_PWR_AD5262_SS_PIN = SS;
 
+String errMsg;
+
 OneWire oneWireBus(ONEWIRE_PIN);
 Temperatures temperatureSensors(&oneWireBus);
 
@@ -103,6 +105,14 @@ void writeTecPwr()
     }
 }
 
+void checkErr()
+{
+    if (errMsg.length() > 0)
+    {
+        exit(-1);
+    }
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -135,7 +145,12 @@ void loop()
 {
     // collect inputs
     temperatureSensors.loop();
+    errMsg = temperatureSensors.getErr();
+    checkErr();
+    
     env_sensor::loop();
+    errMsg = env_sensor::getErr();
+    checkErr();
 
     // adjust setpoints
     waterSetpoint = min(MAX_WATER_TEMPERATURE, temperatureSensors.outsideAir + SETPOINT_DELTA_T);

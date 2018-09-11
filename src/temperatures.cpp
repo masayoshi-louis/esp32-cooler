@@ -31,3 +31,28 @@ void Temperatures::loop()
         lastSampleTs = millis();
     }
 }
+
+String Temperatures::getErr()
+{
+    if (water == -127.00)
+    {
+        return String("Water sensor failure");
+    }
+    if (coldSide == -127.00)
+    {
+        return String("Cold side sensor failure");
+    }
+    if (hotSide == -127.00)
+    {
+        return String("Hot side sensor failure");
+    }
+    if (powerModule == -127.00)
+    {
+        return String("Power module sensor failure");
+    }
+    if (outsideAir == -127.00)
+    {
+        return String("Outside air sensor failure");
+    }
+    return String();
+}

@@ -8,5 +8,6 @@ extern double humidity;
 
 void setup(uint8_t pin);
 void loop();
+String getErr();
 
 } // namespace env_sensor

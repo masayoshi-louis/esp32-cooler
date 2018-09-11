@@ -25,4 +25,13 @@ void loop()
     }
 }
 
+String getErr()
+{
+    if (dht.getStatus() == DHT::DHT_ERROR_t::ERROR_NONE)
+    {
+        return String();
+    }
+    return String("DHT sensor failure");
+}
+
 } // namespace env_sensor

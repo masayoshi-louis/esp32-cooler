@@ -18,6 +18,7 @@ public:
   double outsideAir; 
   Temperatures(OneWire *oneWire);
   void loop();
+  String getErr();
 };
 
 #endif
