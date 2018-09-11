@@ -4,18 +4,18 @@
 namespace env_sensor
 {
 
-float temperature = 0;
-float humidity = 0;
+double temperature = 0;
+double humidity = 0;
 
 DHT dht;
 long long lastSampleTs = 0;
 
-void dht_setup(uint8_t pin)
+void setup(uint8_t pin)
 {
     dht.setup(pin);
 }
 
-void dht_loop()
+void loop()
 {
     if (abs(millis() - lastSampleTs) > dht.getMinimumSamplingPeriod())
     {

@@ -11,10 +11,11 @@ private:
   long long lastSampleTs;
 
 public:
-  float water;
-  float coldSide;
-  float hotSide;
-  float pwr_module;
+  double water;
+  double coldSide;
+  double hotSide;
+  double pwrModule;
+  double outsideAir; 
   Temperatures(OneWire *oneWire);
   void loop();
 };

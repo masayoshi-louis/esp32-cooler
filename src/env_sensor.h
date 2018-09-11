@@ -3,10 +3,10 @@
 namespace env_sensor
 {
 
-extern float temperature;
-extern float humidity;
+extern double temperature;
+extern double humidity;
 
-void dht_setup(uint8_t pin);
-void dht_loop();
+void setup(uint8_t pin);
+void loop();
 
 } // namespace env_sensor
