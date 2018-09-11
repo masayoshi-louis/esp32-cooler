@@ -1,6 +1,6 @@
 {
     "terminal.integrated.env.osx": {
-        "PATH": "/Users/luyi/.platformio/penv/bin:/Users/luyi/.platformio/penv:/Users/luyi/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin",
+        "PATH": "/Users/luyi/.platformio/penv/bin:/Users/luyi/.platformio/penv:/Users/luyi/.cargo/bin:/usr/local/Cellar/openssl/1.0.2l/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet",
         "PLATFORMIO_CALLER": "vscode"
     }
 }
