@@ -103,6 +103,7 @@ void writeTecPwr()
         digitalWrite(TEC_PWR_AD5262_SS_PIN, 1);
         lastValue = tecPwrLv;
     }
+    digitalWrite(TEC_ENABLE_PIN, tecPwrLv > 0);
 }
 
 void checkErr()
@@ -139,6 +140,9 @@ void setup()
     digitalWrite(TEC_PWR_AD5262_SS_PIN, 1);
     SPI.begin();
     SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
+
+    delay(3000);
+    Serial.println("Started");
 }
 
 void loop()
@@ -147,7 +151,7 @@ void loop()
     temperatureSensors.loop();
     errMsg = temperatureSensors.getErr();
     checkErr();
-    
+
     env_sensor::loop();
     errMsg = env_sensor::getErr();
     checkErr();

@@ -14,6 +14,8 @@
 #define PUMP_PWM_PIN 0
 #define POWER_MODULE_FAN_PWM_PIN 0
 
+#define TEC_ENABLE_PIN 0
+
 #define ONEWIRE_PIN 0
 
 #define WATER_TEMP_PROBE_ADDR                          \
