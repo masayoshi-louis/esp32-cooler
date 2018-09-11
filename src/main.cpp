@@ -57,29 +57,41 @@ uint8_t to256steps(double x)
     return (uint8_t)max(0, min(255, x));
 }
 
+void withThreshold(uint8_t *x, uint8_t t)
+{
+    if (*x < t)
+    {
+        *x = 0;
+    }
+}
+
 void computeCoolerFanOutput()
 {
     envTemperaturePID.Compute();
     envHumidityPID.Compute();
     coolerFanPWM = to256steps(max(-coolerFanOutput1, -coolerFanOutput2));
+    withThreshold(&coolerFanPWM, 75);
 }
 
 void computeHeatSinkFanOutput()
 {
     heatSinkPID.Compute();
     heatSinkFanPWM = to256steps(-heatSinkFanPWM);
+    withThreshold(&heatSinkFanPWM, 75);
 }
 
 void computePumpOutput()
 {
     hotSidePID.Compute();
     pumpPWM = to256steps(-pumpOutput);
+    withThreshold(&pumpPWM, 75);
 }
 
 void computeTecOutput()
 {
     coldSidePID.Compute();
     tecPwrLv = to256steps(-tecOutput);
+    withThreshold(&tecPwrLv, 30);
     tecEnabled = tecPwrLv > 0;
 }
 
@@ -87,6 +99,7 @@ void computePowerModuleFanOutput()
 {
     powerModuleFanPID.Compute();
     powerModuleFanPWM = to256steps(-powerModuleFanOutput);
+    withThreshold(&powerModuleFanPWM, 75);
 }
 
 void writeTec()
