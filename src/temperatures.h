@@ -14,7 +14,7 @@ public:
   double water;
   double coldSide;
   double hotSide;
-  double pwrModule;
+  double powerModule;
   double outsideAir; 
   Temperatures(OneWire *oneWire);
   void loop();

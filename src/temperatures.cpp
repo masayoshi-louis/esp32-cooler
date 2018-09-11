@@ -13,7 +13,7 @@ Temperatures::Temperatures(OneWire *oneWire)
     water = 0;
     coldSide = 0;
     hotSide = 0;
-    pwrModule = 0;
+    powerModule = 0;
     outsideAir = 0;
     lastSampleTs = 0;
 }
@@ -26,7 +26,7 @@ void Temperatures::loop()
         water = sensors->getTempC(_WATER_TEMP_PROBE_ADDR);
         coldSide = sensors->getTempC(_COLD_SIDE_TEMP_PROBE_ADDR);
         hotSide = sensors->getTempC(_HOT_SIDE_TEMP_PROBE_ADDR);
-        pwrModule = sensors->getTempC(_POWER_MODULE_TEMP_PROBE_ADDR);
+        powerModule = sensors->getTempC(_POWER_MODULE_TEMP_PROBE_ADDR);
         outsideAir = sensors->getTempC(_OUTSIDE_AIR_TEMP_PROBE_ADDR);
         lastSampleTs = millis();
     }

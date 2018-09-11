@@ -25,6 +25,7 @@ double humiditySetpoint = SETPOINT_H;
 double coldSideSetpoint;
 double hotSideSetpoint;
 double waterSetpoint;
+double powerModuleTemperatureSetpoint = 50;
 
 // outputs
 double coolerFanOutput1;
@@ -32,11 +33,13 @@ double coolerFanOutput2;
 double tecOutput;
 double pumpOutput;
 double heatSinkFanOutput;
+double powerModuleFanOutput;
 
 uint8_t coolerFanPWM;
 uint8_t tecPwrLv;
 uint8_t pumpPWM;
 uint8_t heatSinkFanPWM;
+uint8_t powerModuleFanPWM;
 
 // PID
 PID envTemperaturePID(&env_sensor::temperature, &coolerFanOutput1, &temperatureSetpoint, 2, 5, 1, DIRECT);
@@ -44,6 +47,7 @@ PID envHumidityPID(&env_sensor::humidity, &coolerFanOutput2, &humiditySetpoint, 
 PID coldSidePID(&temperatureSensors.coldSide, &tecOutput, &coldSideSetpoint, 2, 5, 1, DIRECT);
 PID hotSidePID(&temperatureSensors.hotSide, &pumpOutput, &hotSideSetpoint, 2, 5, 1, DIRECT);
 PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 2, 5, 1, DIRECT);
+PID powerModuleFanPID(&temperatureSensors.powerModule, &powerModuleFanOutput, &powerModuleTemperatureSetpoint, 2, 5, 1, DIRECT);
 
 uint8_t to256steps(double x)
 {
@@ -73,6 +77,12 @@ void computeTecOutput()
 {
     coldSidePID.Compute();
     tecPwrLv = to256steps(-tecOutput);
+}
+
+void computePowerModuleFanOutput()
+{
+    powerModuleFanPID.Compute();
+    powerModuleFanPWM = to256steps(-powerModuleFanOutput);
 }
 
 void writeTecPwr()
@@ -143,4 +153,5 @@ void loop()
     writeTecPwr();
     ledcWrite(PUMP_PWM_CH, pumpPWM);
     ledcWrite(HEAT_SINK_FAN_PWM_CH, heatSinkFanPWM);
+    ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
 }
