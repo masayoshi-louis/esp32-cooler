@@ -122,7 +122,7 @@ void checkErr()
 
 float readVoltage(uint8_t pin)
 {
-    return (float)analogRead(pin) / 1023 * 1.1 * TEC_V_SCALE;
+    return (float)adcEnd(pin) / 1023 * 1.1 * TEC_V_SCALE;
 }
 
 void setup()
@@ -155,6 +155,8 @@ void setup()
     // ADC
     analogSetAttenuation(ADC_0db);
     analogSetWidth(10);
+    adcAttachPin(TEC_V_CH1_PIN);
+    adcAttachPin(TEC_V_CH2_PIN);
 
     delay(3000);
     Serial.println("Started");
@@ -162,6 +164,10 @@ void setup()
 
 void loop()
 {
+    // start async ADC
+    adcStart(TEC_V_CH1_PIN);
+    adcStart(TEC_V_CH2_PIN);
+
     // collect inputs
     temperatureSensors.loop();
     errMsg = temperatureSensors.getErr();
@@ -170,9 +176,6 @@ void loop()
     env_sensor::loop();
     errMsg = env_sensor::getErr();
     checkErr();
-
-    tecVoltages[0] = readVoltage(TEC_V_CH1_PIN) * TEC_V_CH1_CAL;
-    tecVoltages[1] = readVoltage(TEC_V_CH2_PIN) * TEC_V_CH2_CAL;
 
     // adjust setpoints
     waterSetpoint = min(MAX_WATER_TEMPERATURE, temperatureSensors.outsideAir + SETPOINT_DELTA_T);
@@ -191,4 +194,8 @@ void loop()
     ledcWrite(PUMP_PWM_CH, pumpPWM);
     ledcWrite(HEAT_SINK_FAN_PWM_CH, heatSinkFanPWM);
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
+
+    // end async ADC
+    tecVoltages[0] = readVoltage(TEC_V_CH1_PIN) * TEC_V_CH1_CAL;
+    tecVoltages[1] = readVoltage(TEC_V_CH2_PIN) * TEC_V_CH2_CAL;
 }
