@@ -45,11 +45,11 @@ uint8_t heatSinkFanPWM;
 uint8_t powerModuleFanPWM;
 
 // PID
-PID envTemperaturePID(&env_sensor::temperature, &coolerFanOutput1, &temperatureSetpoint, 2, 5, 1, DIRECT);
-PID envHumidityPID(&env_sensor::humidity, &coolerFanOutput2, &humiditySetpoint, 2, 5, 1, DIRECT);
-PID coldSidePID(&temperatureSensors.coldSide, &tecOutput, &coldSideSetpoint, 2, 5, 1, DIRECT);
-PID hotSidePID(&temperatureSensors.hotSide, &pumpOutput, &hotSideSetpoint, 2, 5, 1, DIRECT);
-PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 2, 5, 1, DIRECT);
+PID envTemperaturePID(&env_sensor::temperature, &coolerFanOutput1, &temperatureSetpoint, 20, 30, 10, DIRECT);
+PID envHumidityPID(&env_sensor::humidity, &coolerFanOutput2, &humiditySetpoint, 20, 30, 10, DIRECT);
+PID coldSidePID(&temperatureSensors.coldSide, &tecOutput, &coldSideSetpoint, 20, 30, 10, DIRECT);
+PID hotSidePID(&temperatureSensors.hotSide, &pumpOutput, &hotSideSetpoint, 20, 30, 10, DIRECT);
+PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 20, 30, 10, DIRECT);
 PID powerModuleFanPID(&temperatureSensors.powerModule, &powerModuleFanOutput, &powerModuleTemperatureSetpoint, 2, 5, 1, DIRECT);
 
 uint8_t to256steps(double x)
