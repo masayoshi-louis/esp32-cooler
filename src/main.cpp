@@ -53,6 +53,7 @@ PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 1
 PID powerModuleFanPID(&temperatureSensors.powerModule, &powerModuleFanOutput, &powerModuleTemperatureSetpoint, 40, 30, 10, DIRECT);
 
 // other inputs
+bool modeOn;
 float tecVoltages[2];
 
 uint8_t to256steps(double x)
@@ -121,7 +122,7 @@ void writeTec()
         digitalWrite(TEC_PWR_AD5262_SS_PIN, 1);
         lastValue = tecPwrLv;
     }
-    digitalWrite(TEC_ENABLE_PIN, tecEnabled);
+    digitalWrite(TEC_ENABLE_PIN, modeOn && tecEnabled);
 }
 
 void checkErr()
@@ -173,6 +174,8 @@ void setup()
 
     delay(3000);
     Serial.println("Started");
+
+    modeOn = true;
 }
 
 void loop()
