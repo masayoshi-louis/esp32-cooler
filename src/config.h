@@ -10,16 +10,16 @@
 
 // IO Pins
 
-#define DHT22_PIN 0
-#define COOLER_FAN_PWM_PIN 0
-#define HEAT_SINK_FAN_PWM_PIN 0
-#define PUMP_PWM_PIN 0
-#define POWER_MODULE_FAN_PWM_PIN 0
-#define TEC_V_CH1_PIN 35 // ADC1_CH7
-#define TEC_V_CH2_PIN 25 // ADC2_CH8
-#define HALL_SENSOR_PIN 26 // ADC2_CH9
-#define TEC_ENABLE_PIN 0
-#define ONEWIRE_PIN 0
+#define DHT22_PIN 12
+#define COOLER_FAN_PWM_PIN 2
+#define HEAT_SINK_FAN_PWM_PIN 35
+#define PUMP_PWM_PIN 13
+#define POWER_MODULE_FAN_PWM_PIN 17
+#define TEC_V_CH1_PIN 33   // ADC1_CH5
+#define TEC_V_CH2_PIN 14   // ADC2_CH6
+#define HALL_SENSOR_PIN 39 // ADC1_CH3
+#define TEC_ENABLE_PIN 36
+#define ONEWIRE_PIN 15
 
 // Dallas Temperatures
 
