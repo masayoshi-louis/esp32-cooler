@@ -50,12 +50,33 @@ bool Monitor::tecVoltagePoll()
 
 bool Monitor::hallSensorPoll()
 {
-    return true;
+    if (!adcRunning)
+    {
+        adcStart(HALL_SENSOR_PIN);
+        adcRunning = true;
+        return false;
+    }
+    else
+    {
+        if (adcBusy(HALL_SENSOR_PIN))
+        {
+            return false;
+        }
+        auto v = readVoltage(HALL_SENSOR_PIN, 3.9);
+        tecCurrent = (v - 3.3 / 2) / HALL_V_PER_AMP;
+        adcRunning = false;
+        return true;
+    }
 }
 
-float Monitor::readVoltage(uint8_t pin)
+float Monitor::tecPower()
 {
-    return (float)adcEnd(pin) / 4095 * 1.1 * TEC_V_SCALE;
+    return (tecVoltages[0] + tecVoltages[1]) / 2 * tecCurrent;
+}
+
+float Monitor::readVoltage(uint8_t pin, float fullScale)
+{
+    return (float)adcEnd(pin) / 4095 * fullScale;
 }
 
 void Monitor::setup()
