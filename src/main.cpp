@@ -6,6 +6,7 @@
 #include "config.h"
 #include "temperatures.h"
 #include "env_sensor.h"
+#include "monitor.h"
 
 #define COOLER_FAN_PWM_CH 0
 #define HEAT_SINK_FAN_PWM_CH 1
@@ -52,9 +53,9 @@ PID hotSidePID(&temperatureSensors.hotSide, &pumpOutput, &hotSideSetpoint, 50, 3
 PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 15, 30, 10, DIRECT);
 PID powerModuleFanPID(&temperatureSensors.powerModule, &powerModuleFanOutput, &powerModuleTemperatureSetpoint, 40, 30, 10, DIRECT);
 
-// other inputs
+// others
 bool modeOn;
-float tecVoltages[2];
+Monitor monitor;
 
 uint8_t to256steps(double x)
 {
@@ -180,11 +181,9 @@ void setup()
 
 void loop()
 {
-    // start async ADC
-    adcStart(TEC_V_CH1_PIN);
-    adcStart(TEC_V_CH2_PIN);
-
     // collect inputs
+    monitor.poll();
+
     temperatureSensors.loop();
     errMsg = temperatureSensors.getErr();
     checkErr();
@@ -192,6 +191,8 @@ void loop()
     env_sensor::loop();
     errMsg = env_sensor::getErr();
     checkErr();
+
+    monitor.poll();
 
     // adjust setpoints
     waterSetpoint = min(MAX_WATER_TEMPERATURE, temperatureSensors.outsideAir + SETPOINT_DELTA_T);
@@ -204,6 +205,8 @@ void loop()
     computePumpOutput();
     computeHeatSinkFanOutput();
 
+    monitor.poll();
+
     // write outputs
     ledcWrite(COOLER_FAN_PWM_CH, coolerFanPWM);
     writeTec();
@@ -211,7 +214,5 @@ void loop()
     ledcWrite(HEAT_SINK_FAN_PWM_CH, heatSinkFanPWM);
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
 
-    // end async ADC
-    tecVoltages[0] = readVoltage(TEC_V_CH1_PIN) * TEC_V_CH1_CAL;
-    tecVoltages[1] = readVoltage(TEC_V_CH2_PIN) * TEC_V_CH2_CAL;
+    monitor.poll();
 }
