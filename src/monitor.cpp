@@ -55,5 +55,16 @@ bool Monitor::hallSensorPoll()
 
 float Monitor::readVoltage(uint8_t pin)
 {
-    return (float)adcEnd(pin) / 1023 * 1.1 * TEC_V_SCALE;
+    return (float)adcEnd(pin) / 4095 * 1.1 * TEC_V_SCALE;
+}
+
+void Monitor::setup()
+{
+    analogSetPinAttenuation(TEC_V_CH1_PIN, ADC_0db);
+    analogSetPinAttenuation(TEC_V_CH2_PIN, ADC_0db);
+    analogSetPinAttenuation(HALL_SENSOR_PIN, ADC_11db);
+    analogSetWidth(12);
+    adcAttachPin(TEC_V_CH1_PIN);
+    adcAttachPin(TEC_V_CH2_PIN);
+    adcAttachPin(HALL_SENSOR_PIN);
 }

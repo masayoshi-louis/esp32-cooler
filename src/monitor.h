@@ -15,4 +15,6 @@ class Monitor
     Monitor();
     float tecVoltages[2];
     void poll();
+
+    static void setup();
 };

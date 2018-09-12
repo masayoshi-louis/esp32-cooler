@@ -167,11 +167,8 @@ void setup()
     SPI.begin();
     SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
 
-    // ADC
-    analogSetAttenuation(ADC_0db);
-    analogSetWidth(10);
-    adcAttachPin(TEC_V_CH1_PIN);
-    adcAttachPin(TEC_V_CH2_PIN);
+    // monitor
+    Monitor::setup();
 
     delay(3000);
     Serial.println("Started");
