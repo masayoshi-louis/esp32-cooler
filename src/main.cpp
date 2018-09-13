@@ -12,8 +12,9 @@
 #define HEAT_SINK_FAN_PWM_CH 1
 #define PUMP_PWM_CH 2
 #define POWER_MODULE_FAN_PWM_CH 3
-#define PWM_FREQ 22000
 #define PWM_RESOLUTION 8
+#define FOUR_PIN_FAN_PWM_FREQ 22000
+#define BUCK_CONVERTER_PWM_FREQ 180000
 
 const uint8_t TEC_PWR_AD5262_SS_PIN = SS;
 
@@ -148,16 +149,16 @@ void setup()
     env_sensor::setup(DHT22_PIN);
 
     // PWM setup
-    ledcSetup(COOLER_FAN_PWM_CH, PWM_FREQ, PWM_RESOLUTION);
+    ledcSetup(COOLER_FAN_PWM_CH, FOUR_PIN_FAN_PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(COOLER_FAN_PWM_PIN, COOLER_FAN_PWM_CH);
 
-    ledcSetup(HEAT_SINK_FAN_PWM_CH, PWM_FREQ, PWM_RESOLUTION);
+    ledcSetup(HEAT_SINK_FAN_PWM_CH, BUCK_CONVERTER_PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(HEAT_SINK_FAN_PWM_PIN, HEAT_SINK_FAN_PWM_CH);
 
-    ledcSetup(PUMP_PWM_CH, PWM_FREQ, PWM_RESOLUTION);
+    ledcSetup(PUMP_PWM_CH, BUCK_CONVERTER_PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(PUMP_PWM_PIN, PUMP_PWM_CH);
 
-    ledcSetup(POWER_MODULE_FAN_PWM_CH, PWM_FREQ, PWM_RESOLUTION);
+    ledcSetup(POWER_MODULE_FAN_PWM_CH, FOUR_PIN_FAN_PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(POWER_MODULE_FAN_PWM_PIN, POWER_MODULE_FAN_PWM_CH);
 
     // SPI (AD5262)
@@ -193,7 +194,7 @@ void loop()
 
     // adjust setpoints
     waterSetpoint = min(MAX_WATER_TEMPERATURE, temperatureSensors.outsideAir + SETPOINT_DELTA_T);
-    hotSideSetpoint = temperatureSensors.water;
+    hotSideSetpoint = min(temperatureSensors.water, temperatureSensors.hotSide);
     coldSideSetpoint = max(10, env_sensor::temperature - 10);
 
     // compute outputs
