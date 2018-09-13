@@ -17,8 +17,10 @@ Monitor::Monitor(void)
 void Monitor::poll()
 {
     auto pFn = adcPolls[adcSlot];
-    if ((*this.*pFn)())
+    adcRunning = (*this.*pFn)();
+    if (!adcRunning)
     {
+        // move to the next
         if (++adcSlot == ADC_SLOTS)
         {
             adcSlot = 0;
@@ -32,20 +34,14 @@ bool Monitor::tecVoltagePoll()
     {
         adcStart(TEC_V_CH1_PIN);
         adcStart(TEC_V_CH2_PIN);
-        adcRunning = true;
-        return false;
     }
-    else
+    else if (!adcBusy(TEC_V_CH1_PIN) && !adcBusy(TEC_V_CH2_PIN))
     {
-        if (adcBusy(TEC_V_CH1_PIN) || adcBusy(TEC_V_CH2_PIN))
-        {
-            return false;
-        }
         tecVoltages[0] = readVoltage(TEC_V_CH1_PIN) * TEC_V_CH1_CAL;
         tecVoltages[1] = readVoltage(TEC_V_CH2_PIN) * TEC_V_CH2_CAL;
-        adcRunning = false;
-        return true;
+        return false;
     }
+    return true;
 }
 
 bool Monitor::hallSensorPoll()
@@ -53,20 +49,14 @@ bool Monitor::hallSensorPoll()
     if (!adcRunning)
     {
         adcStart(HALL_SENSOR_PIN);
-        adcRunning = true;
-        return false;
     }
-    else
+    else if (!adcBusy(HALL_SENSOR_PIN))
     {
-        if (adcBusy(HALL_SENSOR_PIN))
-        {
-            return false;
-        }
         auto v = readVoltage(HALL_SENSOR_PIN, 3.9);
         tecCurrent = (v - 3.3 / 2) / HALL_V_PER_AMP;
-        adcRunning = false;
-        return true;
+        return false;
     }
+    return true;
 }
 
 float Monitor::tecPower()
