@@ -3,8 +3,8 @@
 namespace env_sensor
 {
 
-extern float temperature;
-extern float humidity;
+extern double temperature;
+extern double humidity;
 
 void setup(uint8_t pin);
 void loop();
