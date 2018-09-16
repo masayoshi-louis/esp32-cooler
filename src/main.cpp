@@ -233,7 +233,7 @@ void printStatus(void *pvParams)
         Serial.printf("[COOLER FAN] PWM=%d PID_T=%.2f PID_H=%.2f\n", coolerFanPWM, coolerFanOutput1, coolerFanOutput2);
         Serial.printf("[TEC] V1=%.2f V2=%.2f PID=%.2f AMP=%.2f POWER=%.2f T_SET=%.2f T_COLD=%.2f\n", monitor.tecVoltages[0], monitor.tecVoltages[1], tecOutput, monitor.tecCurrent, monitor.tecPower(), coldSideSetpoint, temperatureSensors.coldSide);
         Serial.printf("[PUMP] V=%.2f V_SET=%.2f PID=%.2f T_SET=%.2f T_HOT=%.2f\n", pumpPowerControl.voltageCurrent, pumpPowerControl.voltageSetpoint, pumpOutput, hotSideSetpoint, temperatureSensors.hotSide);
-        Serial.printf("[HEATSINK] V=%.2f V_SET=%.2f PID=%.2f T_SET=%.2f T_AIR=%.2f\n", heatSinkFanPowerControl.voltageCurrent, heatSinkFanPowerControl.voltageSetpoint, heatSinkFanOutput, waterSetpoint, temperatureSensors.outsideAir);
+        Serial.printf("[HEATSINK] V=%.2f V_SET=%.2f PID=%.2f T_SET=%.2f T_AIR=%.2f T_WATER=%.2f\n", heatSinkFanPowerControl.voltageCurrent, heatSinkFanPowerControl.voltageSetpoint, heatSinkFanOutput, waterSetpoint, temperatureSensors.outsideAir, temperatureSensors.water);
         Serial.printf("[POWER MODULE] T=%.2f PWM=%d PID=%.2f\n", temperatureSensors.powerModule, powerModuleFanPWM, powerModuleFanOutput);
         Serial.println("---------- END STATUS ------------\n");
     }
