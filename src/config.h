@@ -12,13 +12,15 @@
 
 #define DHT22_PIN 12
 #define COOLER_FAN_PWM_PIN 2
-#define HEAT_SINK_FAN_PWM_PIN 35
+#define HEAT_SINK_FAN_PWM_PIN 35 // TODO change
 #define PUMP_PWM_PIN 13
 #define POWER_MODULE_FAN_PWM_PIN 17
-#define TEC_V_CH1_PIN 33   // ADC1_CH5
-#define TEC_V_CH2_PIN 14   // ADC2_CH6
-#define HALL_SENSOR_PIN 39 // ADC1_CH3
-#define TEC_ENABLE_PIN 36
+#define TEC_V_CH1_PIN 33       // ADC1_CH5
+#define TEC_V_CH2_PIN 14       // ADC2_CH6
+#define PUMP_V_PIN 36          // ADC1_CH0
+#define HEAT_SINK_FAN_V_PIN 25 // ADC2_CH8
+#define HALL_SENSOR_PIN 39     // ADC1_CH3
+#define TEC_ENABLE_PIN 36      // TODO change
 #define ONEWIRE_PIN 15
 
 // Dallas Temperatures
@@ -52,6 +54,18 @@
 #define TEC_V_SCALE ((TEC_V_R1 + TEC_V_R2) / (TEC_V_R2))
 #define TEC_V_CH1_CAL 1.0
 #define TEC_V_CH2_CAL 1.0
+
+// Pump voltage sensor
+#define PUMP_V_R1 51000.0
+#define PUMP_V_R2 4700.0
+#define PUMP_V_SCALE ((PUMP_V_R1 + PUMP_V_R2) / (PUMP_V_R2))
+#define PUMP_V_CAL 1.0
+
+// Heat sink fan voltage sensor
+#define HEAT_SINK_V_R1 51000.0
+#define HEAT_SINK_V_R2 4700.0
+#define HEAT_SINK_V_SCALE ((HEAT_SINK_V_R1 + HEAT_SINK_V_R2) / (HEAT_SINK_V_R2))
+#define HEAT_SINK_V_CAL 1.0
 
 // TEC hall effect current sensor
 

@@ -13,8 +13,11 @@
 #define PUMP_PWM_CH 2
 #define POWER_MODULE_FAN_PWM_CH 3
 #define PWM_RESOLUTION 8
-#define FOUR_PIN_FAN_PWM_FREQ 22000
+#define FOUR_PIN_FAN_PWM_FREQ 25000
 #define BUCK_CONVERTER_PWM_FREQ 180000
+
+#define COOLER_FAN_MAX_DUTY 200
+#define POWER_MODULE_FAN_MAX_DUTY 255
 
 const uint8_t TEC_PWR_AD5262_SS_PIN = SS;
 
@@ -47,8 +50,8 @@ uint8_t heatSinkFanPWM;
 uint8_t powerModuleFanPWM;
 
 // PID
-PID envTemperaturePID(&env_sensor::temperature, &coolerFanOutput1, &temperatureSetpoint, 18, 30, 10, DIRECT);
-PID envHumidityPID(&env_sensor::humidity, &coolerFanOutput2, &humiditySetpoint, 18, 30, 10, DIRECT);
+PID envTemperaturePID(&env_sensor::temperature, &coolerFanOutput1, &temperatureSetpoint, 15, 10, 15, DIRECT);
+PID envHumidityPID(&env_sensor::humidity, &coolerFanOutput2, &humiditySetpoint, 15, 10, 15, DIRECT);
 PID coldSidePID(&temperatureSensors.coldSide, &tecOutput, &coldSideSetpoint, 15, 28, 10, DIRECT);
 PID hotSidePID(&temperatureSensors.hotSide, &pumpOutput, &hotSideSetpoint, 50, 30, 15, DIRECT);
 PID heatSinkPID(&temperatureSensors.water, &heatSinkFanOutput, &waterSetpoint, 15, 30, 10, DIRECT);
@@ -76,7 +79,7 @@ void computeCoolerFanOutput()
     envTemperaturePID.Compute();
     envHumidityPID.Compute();
     coolerFanPWM = to256steps(max(-coolerFanOutput1, -coolerFanOutput2));
-    withThreshold(&coolerFanPWM, 75);
+    coolerFanPWM = min(COOLER_FAN_MAX_DUTY, coolerFanPWM);
 }
 
 void computeHeatSinkFanOutput()
@@ -105,7 +108,7 @@ void computePowerModuleFanOutput()
 {
     powerModuleFanPID.Compute();
     powerModuleFanPWM = to256steps(-powerModuleFanOutput);
-    withThreshold(&powerModuleFanPWM, 75);
+    powerModuleFanPWM = min(POWER_MODULE_FAN_MAX_DUTY, powerModuleFanPWM);
 }
 
 void writeTec()
