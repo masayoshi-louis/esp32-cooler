@@ -71,6 +71,7 @@
 // TEC hall effect current sensor
 
 #define HALL_V_PER_AMP 0.1
+#define HALL_V_CAL 1.0
 
 // Input power voltage sensor
 #define POWER_V_R1 51000.0

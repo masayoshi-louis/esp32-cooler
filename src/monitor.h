@@ -19,8 +19,8 @@ public:
   float tecCurrent;
   float tecPower();
   void poll();
-  void (*heatSinkFanVoltageCb)(uint8_t);
-  void (*pumpVoltageCb)(uint8_t);
+  void (*heatSinkFanVoltageCb)(float);
+  void (*pumpVoltageCb)(float);
 
   static void setup();
 };

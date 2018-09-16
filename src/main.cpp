@@ -161,6 +161,12 @@ void setup()
 
     // monitor
     Monitor::setup();
+    monitor.pumpVoltageCb = [](float value) {
+        pumpPowerControl.onCurrentVoltageChanged(value);
+    };
+    monitor.heatSinkFanVoltageCb = [](float value) {
+        heatSinkFanPowerControl.onCurrentVoltageChanged(value);
+    };
 
     delay(3000);
     Serial.println("Started");

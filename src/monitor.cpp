@@ -80,7 +80,7 @@ bool Monitor::powerSensorPoll()
     {
         powerVoltage = readVoltage(POWER_V_SENSOR_PIN) * POWER_V_SCALE * POWER_V_CAL;
         // hall sensor
-        auto v = readVoltage(HALL_SENSOR_PIN, 3.9);
+        auto v = readVoltage(HALL_SENSOR_PIN, 3.9) * HALL_V_CAL;
         tecCurrent = (v - 3.3 / 2) / HALL_V_PER_AMP;
         return false;
     }

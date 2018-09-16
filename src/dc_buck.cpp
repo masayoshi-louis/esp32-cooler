@@ -11,7 +11,7 @@ BuckConverter::BuckConverter(uint8_t ch, uint8_t pin)
     this->ledcCh = ch;
     this->pwmPin = pin;
     pwmDuty = 0;
-    voltageCurrent = 0;
+    voltageCurrent = -1;
     voltageSetpoint = 0;
 }
 
@@ -22,6 +22,7 @@ void BuckConverter::setup()
     sprintf(name, "buck_converter-%d", instanceCounter++);
     ledcSetup(ledcCh, PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(pwmPin, ledcCh);
+    ledcWrite(ledcCh, pwmDuty);
     xTaskCreatePinnedToCore(taskRunnable, /* pvTaskCode */
                             name,         /* pcName */
                             1000,         /* usStackDepth */
@@ -43,6 +44,9 @@ void BuckConverter::setVoltage(float value)
 
 void BuckConverter::loop()
 {
+    if (voltageCurrent < 0)
+        return;
+
     int32_t newPwmDuty = pwmDuty;
     if (voltageCurrent > voltageSetpoint)
     {
