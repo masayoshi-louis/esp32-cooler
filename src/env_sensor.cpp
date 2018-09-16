@@ -4,8 +4,8 @@
 namespace env_sensor
 {
 
-double temperature = 0;
-double humidity = 0;
+float temperature = 0;
+float humidity = 0;
 
 DHT dht;
 long long lastSampleTs = 0;
