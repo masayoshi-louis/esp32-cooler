@@ -8,15 +8,16 @@ class BuckConverter
   private:
     uint16_t pwmDuty;
     uint8_t pwmPin;
-    volatile uint8_t voltageSetpoint;
-    volatile uint8_t voltageCurrent;
+    uint8_t ledcCh;
+    volatile float voltageSetpoint;
+    volatile float voltageCurrent;
 
   public:
-    BuckConverter(uint8_t pin);
+    BuckConverter(uint8_t ch, uint8_t pin);
     void loop();
     void setup();
-    void setVoltage(uint8_t value);
-    void onCurrentVoltageChanged(uint8_t value);
+    void setVoltage(float value);
+    void onCurrentVoltageChanged(float value);
 };
 
 #endif

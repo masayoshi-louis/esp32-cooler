@@ -7,6 +7,7 @@
 #include "temperatures.h"
 #include "env_sensor.h"
 #include "monitor.h"
+#include "dc_buck.h"
 
 #define COOLER_FAN_PWM_CH 0
 #define HEAT_SINK_FAN_PWM_CH 1
@@ -14,7 +15,6 @@
 #define POWER_MODULE_FAN_PWM_CH 3
 #define PWM_RESOLUTION 8
 #define FOUR_PIN_FAN_PWM_FREQ 25000
-#define BUCK_CONVERTER_PWM_FREQ 180000
 
 #define COOLER_FAN_MAX_DUTY 200
 #define POWER_MODULE_FAN_MAX_DUTY 255
@@ -45,8 +45,8 @@ double powerModuleFanOutput;
 uint8_t coolerFanPWM;
 uint8_t tecPwrLv;
 bool tecEnabled;
-uint8_t pumpPWM;
-uint8_t heatSinkFanPWM;
+uint8_t pumpVoltageLv;
+uint8_t heatSinkFanVoltageLv;
 uint8_t powerModuleFanPWM;
 
 // PID
@@ -60,6 +60,9 @@ PID powerModuleFanPID(&temperatureSensors.powerModule, &powerModuleFanOutput, &p
 // others
 bool modeOn;
 Monitor monitor;
+
+BuckConverter pumpPowerControl(PUMP_PWM_CH, PUMP_PWM_PIN);
+BuckConverter heatSinkFanPowerControl(HEAT_SINK_FAN_PWM_CH, HEAT_SINK_FAN_PWM_PIN);
 
 uint8_t to256steps(double x)
 {
@@ -85,15 +88,15 @@ void computeCoolerFanOutput()
 void computeHeatSinkFanOutput()
 {
     heatSinkPID.Compute();
-    heatSinkFanPWM = to256steps(-heatSinkFanPWM);
-    withThreshold(&heatSinkFanPWM, 75);
+    heatSinkFanVoltageLv = to256steps(-heatSinkFanVoltageLv);
+    withThreshold(&heatSinkFanVoltageLv, 75);
 }
 
 void computePumpOutput()
 {
     hotSidePID.Compute();
-    pumpPWM = to256steps(-pumpOutput);
-    withThreshold(&pumpPWM, 75);
+    pumpVoltageLv = to256steps(-pumpOutput);
+    withThreshold(&pumpVoltageLv, 75);
 }
 
 void computeTecOutput()
@@ -155,14 +158,11 @@ void setup()
     ledcSetup(COOLER_FAN_PWM_CH, FOUR_PIN_FAN_PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(COOLER_FAN_PWM_PIN, COOLER_FAN_PWM_CH);
 
-    ledcSetup(HEAT_SINK_FAN_PWM_CH, BUCK_CONVERTER_PWM_FREQ, PWM_RESOLUTION);
-    ledcAttachPin(HEAT_SINK_FAN_PWM_PIN, HEAT_SINK_FAN_PWM_CH);
-
-    ledcSetup(PUMP_PWM_CH, BUCK_CONVERTER_PWM_FREQ, PWM_RESOLUTION);
-    ledcAttachPin(PUMP_PWM_PIN, PUMP_PWM_CH);
-
     ledcSetup(POWER_MODULE_FAN_PWM_CH, FOUR_PIN_FAN_PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(POWER_MODULE_FAN_PWM_PIN, POWER_MODULE_FAN_PWM_CH);
+
+    pumpPowerControl.setup();
+    heatSinkFanPowerControl.setup();
 
     // SPI (AD5262)
     Serial.printf("MOSI=%d, MISO=%d, SCK=%d, SS=%d\n", MOSI, MISO, SCK, TEC_PWR_AD5262_SS_PIN);
@@ -211,8 +211,8 @@ void loop()
     // write outputs
     ledcWrite(COOLER_FAN_PWM_CH, coolerFanPWM);
     writeTec();
-    ledcWrite(PUMP_PWM_CH, pumpPWM);
-    ledcWrite(HEAT_SINK_FAN_PWM_CH, heatSinkFanPWM);
+    pumpPowerControl.setVoltage(12.0 / 255 * pumpVoltageLv);
+    heatSinkFanPowerControl.setVoltage(12.0 / 255 * heatSinkFanVoltageLv);
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
 
     monitor.poll();
