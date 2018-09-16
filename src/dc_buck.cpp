@@ -19,16 +19,16 @@ void BuckConverter::setup()
 {
     static uint8_t instanceCounter = 0;
     char name[100];
-    sprintf(&name[0], "buck_converter-%d", instanceCounter++);
+    sprintf(name, "buck_converter-%d", instanceCounter++);
     ledcSetup(ledcCh, PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(pwmPin, ledcCh);
     xTaskCreatePinnedToCore(taskRunnable, /* pvTaskCode */
-                            &name[0],     /* pcName */
+                            name,         /* pcName */
                             1000,         /* usStackDepth */
                             this,         /* pvParameters */
                             1,            /* uxPriority */
                             NULL,         /* pxCreatedTask */
-                            0);
+                            0);           /* core */
 }
 
 void BuckConverter::onCurrentVoltageChanged(float value)

@@ -64,11 +64,6 @@ Monitor monitor;
 BuckConverter pumpPowerControl(PUMP_PWM_CH, PUMP_PWM_PIN);
 BuckConverter heatSinkFanPowerControl(HEAT_SINK_FAN_PWM_CH, HEAT_SINK_FAN_PWM_PIN);
 
-uint8_t to256steps(double x)
-{
-    return (uint8_t)max(0, min(255, x));
-}
-
 void withThreshold(uint8_t *x, uint8_t t)
 {
     if (*x < t)
@@ -81,28 +76,27 @@ void computeCoolerFanOutput()
 {
     envTemperaturePID.Compute();
     envHumidityPID.Compute();
-    coolerFanPWM = to256steps(max(-coolerFanOutput1, -coolerFanOutput2));
-    coolerFanPWM = min(COOLER_FAN_MAX_DUTY, coolerFanPWM);
+    coolerFanPWM = (uint8_t)constrain(max(-coolerFanOutput1, -coolerFanOutput2), 0, COOLER_FAN_MAX_DUTY);
 }
 
 void computeHeatSinkFanOutput()
 {
     heatSinkPID.Compute();
-    heatSinkFanVoltageLv = to256steps(-heatSinkFanVoltageLv);
+    heatSinkFanVoltageLv = (uint8_t)constrain(-heatSinkFanOutput, 0, 255);
     withThreshold(&heatSinkFanVoltageLv, 75);
 }
 
 void computePumpOutput()
 {
     hotSidePID.Compute();
-    pumpVoltageLv = to256steps(-pumpOutput);
+    pumpVoltageLv = (uint8_t)constrain(-pumpOutput, 0, 255);
     withThreshold(&pumpVoltageLv, 75);
 }
 
 void computeTecOutput()
 {
     coldSidePID.Compute();
-    tecPwrLv = to256steps(-tecOutput);
+    tecPwrLv = (uint8_t)constrain(-tecOutput, 0, 255);
     withThreshold(&tecPwrLv, 30);
     tecEnabled = tecPwrLv > 0;
 }
@@ -110,8 +104,7 @@ void computeTecOutput()
 void computePowerModuleFanOutput()
 {
     powerModuleFanPID.Compute();
-    powerModuleFanPWM = to256steps(-powerModuleFanOutput);
-    powerModuleFanPWM = min(POWER_MODULE_FAN_MAX_DUTY, powerModuleFanPWM);
+    powerModuleFanPWM = (uint8_t)constrain(-powerModuleFanOutput, 0, POWER_MODULE_FAN_MAX_DUTY);
 }
 
 void writeTec()
@@ -140,11 +133,6 @@ void checkErr()
         digitalWrite(TEC_ENABLE_PIN, LOW);
         exit(-1);
     }
-}
-
-float readVoltage(uint8_t pin)
-{
-    return (float)adcEnd(pin) / 1023 * 1.1 * TEC_V_SCALE;
 }
 
 void setup()

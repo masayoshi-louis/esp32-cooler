@@ -9,11 +9,12 @@ private:
   bool adcRunning;
   float readVoltage(uint8_t pin, float fullScale = 1.1);
   bool tecVoltagePoll();
-  bool hallSensorPoll();
+  bool powerSensorPoll();
   bool pumpAndHeatSinkFanVoltagePoll();
 
 public:
   Monitor();
+  float powerVoltage;
   float tecVoltages[2];
   float tecCurrent;
   float tecPower();

@@ -12,7 +12,7 @@
 
 #define DHT22_PIN 12
 #define COOLER_FAN_PWM_PIN 2
-#define HEAT_SINK_FAN_PWM_PIN 35 // TODO change
+#define HEAT_SINK_FAN_PWM_PIN 26
 #define PUMP_PWM_PIN 13
 #define POWER_MODULE_FAN_PWM_PIN 17
 #define TEC_V_CH1_PIN 33       // ADC1_CH5
@@ -20,8 +20,9 @@
 #define PUMP_V_PIN 36          // ADC1_CH0
 #define HEAT_SINK_FAN_V_PIN 25 // ADC2_CH8
 #define HALL_SENSOR_PIN 39     // ADC1_CH3
-#define TEC_ENABLE_PIN 36      // TODO change
-#define ONEWIRE_PIN 15
+#define POWER_V_SENSOR_PIN 15  // ADC2_CH3
+#define TEC_ENABLE_PIN 4
+#define ONEWIRE_PIN 16
 
 // Dallas Temperatures
 
@@ -31,20 +32,20 @@
     }
 #define COLD_SIDE_TEMP_PROBE_ADDR                      \
     {                                                  \
-        0x28, 0x8D, 0x7B, 0x4D, 0x0A, 0x00, 0x00, 0xB4 \
+        0x28, 0x74, 0x56, 0x73, 0x0A, 0x00, 0x00, 0x19 \
     }
 #define HOT_SIDE_TEMP_PROBE_ADDR                       \
     {                                                  \
-        0x28, 0x8D, 0x7B, 0x4D, 0x0A, 0x00, 0x00, 0xB4 \
+        0x28, 0x35, 0x04, 0x72, 0x0A, 0x00, 0x00, 0xC2 \
     }
 #define POWER_MODULE_TEMP_PROBE_ADDR                   \
     {                                                  \
-        0x28, 0x8D, 0x7B, 0x4D, 0x0A, 0x00, 0x00, 0xB4 \
+        0x28, 0x1A, 0xB4, 0x77, 0x91, 0x15, 0x02, 0xD8 \
     }
 
 #define OUTSIDE_AIR_TEMP_PROBE_ADDR                    \
     {                                                  \
-        0x28, 0x8D, 0x7B, 0x4D, 0x0A, 0x00, 0x00, 0xB4 \
+        0x28, 0x07, 0xAA, 0x4E, 0x0A, 0x00, 0x00, 0x8A \
     }
 
 // TEC voltage sensor
@@ -70,5 +71,11 @@
 // TEC hall effect current sensor
 
 #define HALL_V_PER_AMP 0.1
+
+// Input power voltage sensor
+#define POWER_V_R1 51000.0
+#define POWER_V_R2 4700.0
+#define POWER_V_SCALE ((POWER_V_R1 + POWER_V_R2) / (POWER_V_R2))
+#define POWER_V_CAL 1.0
 
 #endif
