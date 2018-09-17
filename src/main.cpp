@@ -131,6 +131,8 @@ void checkErr()
     if (errMsg.length() > 0)
     {
         digitalWrite(TEC_ENABLE_PIN, LOW);
+        Serial.print("Error: ");
+        Serial.println(errMsg.c_str());
         exit(-1);
     }
 }
