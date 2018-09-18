@@ -1,8 +1,10 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include <Wire.h>
 #include <OneWire.h>
 #include <SPI.h>
 #include <PID_v1.h>
+#include <VL53L0X.h>
 #include "config.h"
 #include "temperatures.h"
 #include "env_sensor.h"
@@ -63,6 +65,9 @@ Monitor monitor;
 
 BuckConverter pumpPowerControl(PUMP_PWM_CH, PUMP_PWM_PIN);
 BuckConverter heatSinkFanPowerControl(HEAT_SINK_FAN_PWM_CH, HEAT_SINK_FAN_PWM_PIN);
+
+VL53L0X vl53l0x;
+uint16_t humanDistance = 0;
 
 void withThreshold(uint8_t *x, uint8_t t)
 {
@@ -172,6 +177,12 @@ void setup()
         heatSinkFanPowerControl.onCurrentVoltageChanged(value);
     };
 
+    // distance sensor
+    Wire.begin();
+    vl53l0x.init();
+    vl53l0x.setTimeout(500);
+    vl53l0x.startContinuous(300);
+
     delay(3000);
     Serial.println("Started");
 
@@ -223,6 +234,12 @@ void loop()
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
 
     monitor.poll();
+
+    humanDistance = vl53l0x.readRangeContinuousMillimeters();
+    if (vl53l0x.timeoutOccurred())
+    {
+        humanDistance = 0;
+    }
 }
 
 void printStatus(void *pvParams)
