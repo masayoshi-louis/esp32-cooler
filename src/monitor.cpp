@@ -9,7 +9,7 @@ Monitor::Monitor(void)
     powerVoltage = 0;
     tecVoltages[0] = 0;
     tecVoltages[1] = 0;
-    adcPolls = (adc_poll_fn *)calloc(sizeof(adc_poll_fn), ADC_SLOTS);
+    adcPolls = (AdcPollHandler_t *)calloc(sizeof(AdcPollHandler_t), ADC_SLOTS);
     adcPolls[0] = &Monitor::tecVoltagePoll;
     adcPolls[1] = &Monitor::powerSensorPoll;
     adcRunning = false;
