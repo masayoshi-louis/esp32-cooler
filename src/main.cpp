@@ -168,6 +168,9 @@ void setup()
     SPI.begin();
     SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
 
+    // I2C
+    Wire.begin();
+
     // monitor
     Monitor::setup();
     monitor.pumpVoltageCb = [](float value) {
@@ -178,10 +181,9 @@ void setup()
     };
 
     // distance sensor
-    Wire.begin();
     vl53l0x.init();
     vl53l0x.setTimeout(500);
-    vl53l0x.startContinuous(300);
+    vl53l0x.startContinuous(200);
 
     delay(3000);
     Serial.println("Started");
@@ -235,6 +237,7 @@ void loop()
 
     monitor.poll();
 
+    // the others
     humanDistance = vl53l0x.readRangeContinuousMillimeters();
     if (vl53l0x.timeoutOccurred())
     {
@@ -254,6 +257,7 @@ void printStatus(void *pvParams)
         Serial.printf("[PUMP] V=%.2f V_SET=%.2f PID=%.2f T_SET=%.2f T_HOT=%.2f\n", pumpPowerControl.voltageCurrent, pumpPowerControl.voltageSetpoint, pumpOutput, hotSideSetpoint, temperatureSensors.hotSide);
         Serial.printf("[HEATSINK] V=%.2f V_SET=%.2f PID=%.2f T_SET=%.2f T_AIR=%.2f T_WATER=%.2f\n", heatSinkFanPowerControl.voltageCurrent, heatSinkFanPowerControl.voltageSetpoint, heatSinkFanOutput, waterSetpoint, temperatureSensors.outsideAir, temperatureSensors.water);
         Serial.printf("[POWER MODULE] T=%.2f PWM=%d PID=%.2f\n", temperatureSensors.powerModule, powerModuleFanPWM, powerModuleFanOutput);
+        Serial.printf("[VL53L0X] D=%dmm\f", humanDistance);
         Serial.println("---------- END STATUS ------------\n");
     }
 }
