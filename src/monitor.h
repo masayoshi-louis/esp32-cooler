@@ -13,15 +13,15 @@ private:
   bool pumpAndHeatSinkFanVoltagePoll();
 
 public:
-  typedef void (*VoltageCallback_t)(float);
+  typedef void (*VoltageListener_t)(float);
   Monitor();
   float powerVoltage;
   float tecVoltages[2];
   float tecCurrent;
   float tecPower();
   void poll();
-  VoltageCallback_t heatSinkFanVoltageCb;
-  VoltageCallback_t pumpVoltageCb;
+  VoltageListener_t heatSinkFanVoltageListener;
+  VoltageListener_t pumpVoltageListener;
 
   static void setup();
 };

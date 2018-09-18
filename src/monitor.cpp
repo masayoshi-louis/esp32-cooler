@@ -13,8 +13,8 @@ Monitor::Monitor(void)
     adcPolls[0] = &Monitor::tecVoltagePoll;
     adcPolls[1] = &Monitor::powerSensorPoll;
     adcRunning = false;
-    pumpVoltageCb = NULL;
-    heatSinkFanVoltageCb = NULL;
+    pumpVoltageListener = NULL;
+    heatSinkFanVoltageListener = NULL;
 }
 
 void Monitor::poll()
@@ -56,13 +56,13 @@ bool Monitor::pumpAndHeatSinkFanVoltagePoll()
     }
     else if (!adcBusy(PUMP_V_PIN) && !adcBusy(HEAT_SINK_FAN_V_PIN))
     {
-        if (pumpVoltageCb)
+        if (pumpVoltageListener)
         {
-            (*pumpVoltageCb)(readVoltage(PUMP_V_PIN) * PUMP_V_SCALE * PUMP_V_CAL);
+            (*pumpVoltageListener)(readVoltage(PUMP_V_PIN) * PUMP_V_SCALE * PUMP_V_CAL);
         }
-        if (heatSinkFanVoltageCb)
+        if (heatSinkFanVoltageListener)
         {
-            (*heatSinkFanVoltageCb)(readVoltage(HEAT_SINK_FAN_V_PIN) * HEAT_SINK_V_SCALE * HEAT_SINK_V_CAL);
+            (*heatSinkFanVoltageListener)(readVoltage(HEAT_SINK_FAN_V_PIN) * HEAT_SINK_V_SCALE * HEAT_SINK_V_CAL);
         }
         return false;
     }

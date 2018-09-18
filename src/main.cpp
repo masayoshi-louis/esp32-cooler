@@ -173,10 +173,10 @@ void setup()
 
     // monitor
     Monitor::setup();
-    monitor.pumpVoltageCb = [](float value) {
+    monitor.pumpVoltageListener = [](float value) {
         pumpPowerControl.onCurrentVoltageChanged(value);
     };
-    monitor.heatSinkFanVoltageCb = [](float value) {
+    monitor.heatSinkFanVoltageListener = [](float value) {
         heatSinkFanPowerControl.onCurrentVoltageChanged(value);
     };
 
