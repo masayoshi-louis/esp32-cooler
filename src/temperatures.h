@@ -9,7 +9,7 @@ class Temperatures
 private:
   DallasTemperature *sensors;
   void loop();
-  static void temperaturesSampleTask(void *);
+  static void sampleTask(void *);
 
 public:
   double water;

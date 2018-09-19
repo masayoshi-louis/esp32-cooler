@@ -27,7 +27,7 @@ void Temperatures::loop()
     outsideAir = sensors->getTempC(_OUTSIDE_AIR_TEMP_PROBE_ADDR);
 }
 
-void Temperatures::temperaturesSampleTask(void *pvParams)
+void Temperatures::sampleTask(void *pvParams)
 {
     Temperatures *t = (Temperatures *)pvParams;
     for (;;)
@@ -45,7 +45,7 @@ void Temperatures::temperaturesSampleTask(void *pvParams)
 
 void Temperatures::begin()
 {
-    xTaskCreate(Temperatures::temperaturesSampleTask,
+    xTaskCreate(Temperatures::sampleTask,
                 "temperatures_sample",
                 configMINIMAL_STACK_SIZE,
                 this,
