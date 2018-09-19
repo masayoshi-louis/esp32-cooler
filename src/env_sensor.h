@@ -6,8 +6,6 @@ namespace env_sensor
 extern double temperature;
 extern double humidity;
 
-void setup(uint8_t pin);
-void loop();
-String getErr();
+void begin(uint8_t pin);
 
 } // namespace env_sensor

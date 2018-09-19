@@ -2,9 +2,10 @@
 
 #define PWM_FREQ 180000
 #define PWM_RESOLUTION 16
+#define PWM_DUTY_MAX 65535
 #define PWM_STEP 100
 
-void buckConverterTaskHandler(void *pvParams);
+void buckConverterTask(void *pvParams);
 
 BuckConverter::BuckConverter(uint8_t ch, uint8_t pin)
 {
@@ -24,7 +25,7 @@ void BuckConverter::setup()
     ledcAttachPin(pwmPin, ledcCh);
     ledcWrite(ledcCh, pwmDuty);
 
-    xTaskCreate(buckConverterTaskHandler, /* pvTaskCode */
+    xTaskCreate(buckConverterTask,        /* pvTaskCode */
                 name,                     /* pcName */
                 configMINIMAL_STACK_SIZE, /* usStackDepth */
                 this,                     /* pvParameters */
@@ -56,7 +57,7 @@ void BuckConverter::loop()
     {
         newPwmDuty += PWM_STEP;
     }
-    newPwmDuty = constrain(newPwmDuty, 0, 65535);
+    newPwmDuty = constrain(newPwmDuty, 0, PWM_DUTY_MAX);
     if (newPwmDuty != pwmDuty)
     {
         ledcWrite(ledcCh, (uint16_t)newPwmDuty);
@@ -65,10 +66,10 @@ void BuckConverter::loop()
 
 float BuckConverter::dutyCycle()
 {
-    return pwmDuty / 65535.0;
+    return (float)pwmDuty / PWM_DUTY_MAX;
 }
 
-void buckConverterTaskHandler(void *pvParams)
+void buckConverterTask(void *pvParams)
 {
     BuckConverter *bc = (BuckConverter *)pvParams;
     while (1)

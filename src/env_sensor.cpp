@@ -8,30 +8,26 @@ double temperature = 0;
 double humidity = 0;
 
 DHT dht;
-long long lastSampleTs = 0;
 
-void setup(uint8_t pin)
+void sampleTask(void *pvParams)
 {
-    dht.setup(pin);
-}
-
-void loop()
-{
-    if (abs(millis() - lastSampleTs) > dht.getMinimumSamplingPeriod())
+    for (;;)
     {
         humidity = dht.getHumidity();
         temperature = dht.getTemperature();
-        lastSampleTs = millis();
+        if (dht.getStatus() != DHT::ERROR_NONE)
+        {
+            ESP_LOGE("DHT", "Sensor failure, code=%d", dht.getStatus());
+            exit(-1);
+        }
+        delay(dht.getMinimumSamplingPeriod() + 10);
     }
 }
 
-String getErr()
+void begin(uint8_t pin)
 {
-    if (dht.getStatus() == DHT::ERROR_NONE)
-    {
-        return String();
-    }
-    return String("DHT sensor failure");
+    dht.setup(pin);
+    xTaskCreate(sampleTask, "dht_sample", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
 }
 
 } // namespace env_sensor

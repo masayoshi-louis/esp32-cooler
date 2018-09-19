@@ -3,7 +3,7 @@
 
 #define ADC_SLOTS 3
 
-void monitorPollTaskHandler(void *pvParams);
+void monitorPollTask(void *pvParams);
 
 Monitor::Monitor(void)
 {
@@ -115,7 +115,7 @@ void Monitor::setup()
     adcAttachPin(HALL_SENSOR_PIN);
     adcAttachPin(POWER_V_SENSOR_PIN);
 
-    xTaskCreate(monitorPollTaskHandler,   /* pvTaskCode */
+    xTaskCreate(monitorPollTask,          /* pvTaskCode */
                 "monitor_poll",           /* pcName */
                 configMINIMAL_STACK_SIZE, /* usStackDepth */
                 this,                     /* pvParameters */
@@ -123,7 +123,7 @@ void Monitor::setup()
                 NULL);                    /* pxCreatedTask */
 }
 
-void monitorPollTaskHandler(void *pvParams)
+void monitorPollTask(void *pvParams)
 {
     Monitor *m = (Monitor *)pvParams;
     while (1)

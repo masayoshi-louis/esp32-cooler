@@ -10,6 +10,8 @@
 #include "env_sensor.h"
 #include "monitor.h"
 #include "dc_buck.h"
+#include "cli/cli.h"
+#include "esp_log.h"
 
 #define COOLER_FAN_PWM_CH 0
 #define HEAT_SINK_FAN_PWM_CH 1
@@ -136,8 +138,7 @@ void checkErr()
     if (errMsg.length() > 0)
     {
         digitalWrite(TEC_ENABLE_PIN, LOW);
-        Serial.print("Error: ");
-        Serial.println(errMsg.c_str());
+        ESP_LOGE(errMsg.c_str());
         exit(-1);
     }
 }
@@ -146,10 +147,14 @@ void printStatus(void *);
 
 void setup()
 {
+#ifdef CONFIG_ENABLE_CLI
+    setupCli();
+#else
     Serial.begin(115200);
+#endif
 
     // sensor setup
-    env_sensor::setup(DHT22_PIN);
+    env_sensor::begin(DHT22_PIN);
 
     // PWM setup
     ledcSetup(COOLER_FAN_PWM_CH, FOUR_PIN_FAN_PWM_FREQ, PWM_RESOLUTION);
@@ -162,7 +167,7 @@ void setup()
     heatSinkFanPowerControl.setup();
 
     // SPI (AD5262)
-    Serial.printf("MOSI=%d, MISO=%d, SCK=%d, SS=%d\n", MOSI, MISO, SCK, TEC_PWR_AD5262_SS_PIN);
+    ESP_LOGI("SPI", "MOSI=%d, MISO=%d, SCK=%d, SS=%d", MOSI, MISO, SCK, TEC_PWR_AD5262_SS_PIN);
     pinMode(TEC_PWR_AD5262_SS_PIN, OUTPUT);
     digitalWrite(TEC_PWR_AD5262_SS_PIN, 1);
     SPI.begin();
@@ -186,16 +191,17 @@ void setup()
     vl53l0x.startContinuous(200);
 
     delay(3000);
-    Serial.println("Started");
-
+    ESP_LOGI("Started");
+#ifndef CONFIG_ENABLE_CLI
     xTaskCreatePinnedToCore(
-        printStatus,
+        printStatusTaskHandler,
         "print_status",
         500,
         NULL,
         1,
         NULL,
         1);
+#endif
 
     modeOn = true;
 }
@@ -205,10 +211,6 @@ void loop()
     // collect inputs
     temperatureSensors.loop();
     errMsg = temperatureSensors.getErr();
-    checkErr();
-
-    env_sensor::loop();
-    errMsg = env_sensor::getErr();
     checkErr();
 
     // adjust setpoints
@@ -237,7 +239,7 @@ void loop()
     }
 }
 
-void printStatus(void *pvParams)
+void printStatusTaskHandler(void *pvParams)
 {
     while (1)
     {

@@ -3,6 +3,8 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
+#define CONFIG_ENABLE_CLI
+
 #define SETPOINT_T 30
 #define SETPOINT_H 35
 #define SETPOINT_DELTA_T 10
