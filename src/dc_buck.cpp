@@ -23,10 +23,10 @@ void BuckConverter::setup()
     ledcSetup(ledcCh, PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(pwmPin, ledcCh);
     ledcWrite(ledcCh, pwmDuty);
-    
+
     xTaskCreate(buckConverterTaskHandler, /* pvTaskCode */
                 name,                     /* pcName */
-                1000,                     /* usStackDepth */
+                configMINIMAL_STACK_SIZE, /* usStackDepth */
                 this,                     /* pvParameters */
                 2,                        /* uxPriority */
                 NULL);                    /* pxCreatedTask */

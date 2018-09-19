@@ -115,12 +115,12 @@ void Monitor::setup()
     adcAttachPin(HALL_SENSOR_PIN);
     adcAttachPin(POWER_V_SENSOR_PIN);
 
-    xTaskCreate(monitorPollTaskHandler, /* pvTaskCode */
-                "monitor_poll",         /* pcName */
-                1000,                   /* usStackDepth */
-                this,                   /* pvParameters */
-                2,                      /* uxPriority */
-                NULL);                  /* pxCreatedTask */
+    xTaskCreate(monitorPollTaskHandler,   /* pvTaskCode */
+                "monitor_poll",           /* pcName */
+                configMINIMAL_STACK_SIZE, /* usStackDepth */
+                this,                     /* pvParameters */
+                2,                        /* uxPriority */
+                NULL);                    /* pxCreatedTask */
 }
 
 void monitorPollTaskHandler(void *pvParams)
