@@ -158,7 +158,9 @@ void setup()
     ledcAttachPin(POWER_MODULE_FAN_PWM_PIN, POWER_MODULE_FAN_PWM_CH);
 
     pumpPowerControl.setup();
+    pumpPowerControl.maxVoltage = 12;
     heatSinkFanPowerControl.setup();
+    heatSinkFanPowerControl.maxVoltage = 10;
 
     // SPI (AD5262)
     ESP_LOGI("SPI", "MOSI=%d, MISO=%d, SCK=%d, SS=%d", MOSI, MISO, SCK, TEC_PWR_AD5262_SS_PIN);

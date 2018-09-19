@@ -12,6 +12,7 @@ BuckConverter::BuckConverter(uint8_t ch, uint8_t pin)
     pwmDuty = 0;
     voltageCurrent = -1;
     voltageSetpoint = 0;
+    maxVoltage = 1000000;
     sync = xSemaphoreCreateBinary();
 }
 
@@ -40,7 +41,7 @@ void BuckConverter::onCurrentVoltageChanged(float value)
 
 void BuckConverter::setVoltage(float value)
 {
-    voltageSetpoint = value;
+    voltageSetpoint = min(value, maxVoltage);
 }
 
 void BuckConverter::loop()

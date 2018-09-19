@@ -15,6 +15,7 @@ private:
 public:
   volatile float voltageSetpoint;
   volatile float voltageCurrent;
+  float maxVoltage;
   BuckConverter(uint8_t ch, uint8_t pin);
   void loop();
   void setup();
