@@ -4,7 +4,7 @@
 #define PWM_RESOLUTION 16
 #define PWM_STEP 100
 
-void taskRunnable(void *pvParams);
+void buckConverterTaskHandler(void *pvParams);
 
 BuckConverter::BuckConverter(uint8_t ch, uint8_t pin)
 {
@@ -23,13 +23,13 @@ void BuckConverter::setup()
     ledcSetup(ledcCh, PWM_FREQ, PWM_RESOLUTION);
     ledcAttachPin(pwmPin, ledcCh);
     ledcWrite(ledcCh, pwmDuty);
-    xTaskCreatePinnedToCore(taskRunnable, /* pvTaskCode */
-                            name,         /* pcName */
-                            1000,         /* usStackDepth */
-                            this,         /* pvParameters */
-                            1,            /* uxPriority */
-                            NULL,         /* pxCreatedTask */
-                            0);           /* core */
+    
+    xTaskCreate(buckConverterTaskHandler, /* pvTaskCode */
+                name,                     /* pcName */
+                1000,                     /* usStackDepth */
+                this,                     /* pvParameters */
+                2,                        /* uxPriority */
+                NULL);                    /* pxCreatedTask */
 }
 
 void BuckConverter::onCurrentVoltageChanged(float value)
@@ -63,12 +63,12 @@ void BuckConverter::loop()
     }
 }
 
-void taskRunnable(void *pvParams)
+void buckConverterTaskHandler(void *pvParams)
 {
     BuckConverter *bc = (BuckConverter *)pvParams;
     while (1)
     {
-        bc->loop();
         delayMicroseconds(250);
+        bc->loop();
     }
 }

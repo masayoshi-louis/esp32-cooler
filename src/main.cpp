@@ -172,7 +172,7 @@ void setup()
     Wire.begin();
 
     // monitor
-    Monitor::setup();
+    monitor.setup();
     monitor.pumpVoltageListener = [](float value) {
         pumpPowerControl.onCurrentVoltageChanged(value);
     };
@@ -203,8 +203,6 @@ void setup()
 void loop()
 {
     // collect inputs
-    monitor.poll();
-
     temperatureSensors.loop();
     errMsg = temperatureSensors.getErr();
     checkErr();
@@ -212,8 +210,6 @@ void loop()
     env_sensor::loop();
     errMsg = env_sensor::getErr();
     checkErr();
-
-    monitor.poll();
 
     // adjust setpoints
     waterSetpoint = min(MAX_WATER_TEMPERATURE, temperatureSensors.outsideAir + SETPOINT_DELTA_T);
@@ -226,16 +222,12 @@ void loop()
     computePumpOutput();
     computeHeatSinkFanOutput();
 
-    monitor.poll();
-
     // write outputs
     ledcWrite(COOLER_FAN_PWM_CH, coolerFanPWM);
     writeTec();
     pumpPowerControl.setVoltage(12.0 / 255 * pumpVoltageLv);
     heatSinkFanPowerControl.setVoltage(12.0 / 255 * heatSinkFanVoltageLv);
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
-
-    monitor.poll();
 
     // the others
     humanDistance = vl53l0x.readRangeContinuousMillimeters();

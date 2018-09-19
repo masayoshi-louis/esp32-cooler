@@ -23,5 +23,5 @@ public:
   VoltageListener_t heatSinkFanVoltageListener;
   VoltageListener_t pumpVoltageListener;
 
-  static void setup();
+  void setup();
 };
