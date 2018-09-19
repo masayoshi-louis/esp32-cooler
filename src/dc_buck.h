@@ -10,6 +10,7 @@ private:
   uint8_t pwmPin;
   uint8_t ledcCh;
   static void loopTask(void *);
+  SemaphoreHandle_t sync;
 
 public:
   volatile float voltageSetpoint;

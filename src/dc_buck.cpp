@@ -12,6 +12,7 @@ BuckConverter::BuckConverter(uint8_t ch, uint8_t pin)
     pwmDuty = 0;
     voltageCurrent = -1;
     voltageSetpoint = 0;
+    sync = xSemaphoreCreateBinary();
 }
 
 void BuckConverter::setup()
@@ -27,13 +28,14 @@ void BuckConverter::setup()
                 name,                     /* pcName */
                 configMINIMAL_STACK_SIZE, /* usStackDepth */
                 this,                     /* pvParameters */
-                2,                        /* uxPriority */
+                10,                       /* uxPriority */
                 NULL);                    /* pxCreatedTask */
 }
 
 void BuckConverter::onCurrentVoltageChanged(float value)
 {
     voltageCurrent = value;
+    xSemaphoreGive(sync);
 }
 
 void BuckConverter::setVoltage(float value)
@@ -70,9 +72,9 @@ float BuckConverter::dutyCycle()
 void BuckConverter::loopTask(void *pvParams)
 {
     BuckConverter *bc = (BuckConverter *)pvParams;
-    while (1)
+    for (;;)
     {
-        delayMicroseconds(250);
-        bc->loop();
+        if (xSemaphoreTake(bc->sync, portMAX_DELAY) == pdTRUE)
+            bc->loop();
     }
 }

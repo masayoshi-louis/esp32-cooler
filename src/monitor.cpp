@@ -124,9 +124,9 @@ void Monitor::setup()
 void Monitor::pollTask(void *pvParams)
 {
     Monitor *m = (Monitor *)pvParams;
-    while (1)
+    for (;;)
     {
-        delay(10);
+        delay(1);
         m->poll();
     }
 }
