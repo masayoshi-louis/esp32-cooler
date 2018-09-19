@@ -25,8 +25,6 @@
 
 const uint8_t TEC_PWR_AD5262_SS_PIN = SS;
 
-String errMsg;
-
 OneWire oneWireBus(ONEWIRE_PIN);
 Temperatures temperatureSensors(&oneWireBus);
 
@@ -133,17 +131,7 @@ void writeTec()
     digitalWrite(TEC_ENABLE_PIN, modeOn && tecEnabled);
 }
 
-void checkErr()
-{
-    if (errMsg.length() > 0)
-    {
-        digitalWrite(TEC_ENABLE_PIN, LOW);
-        ESP_LOGE(errMsg.c_str());
-        exit(-1);
-    }
-}
-
-void printStatus(void *);
+void printStatusTask(void *);
 
 void setup()
 {
@@ -155,6 +143,7 @@ void setup()
 
     // sensor setup
     env_sensor::begin(DHT22_PIN);
+    temperatureSensors.begin();
 
     // PWM setup
     ledcSetup(COOLER_FAN_PWM_CH, FOUR_PIN_FAN_PWM_FREQ, PWM_RESOLUTION);
@@ -194,7 +183,7 @@ void setup()
     ESP_LOGI("Started");
 #ifndef CONFIG_ENABLE_CLI
     xTaskCreatePinnedToCore(
-        printStatusTaskHandler,
+        printStatusTask,
         "print_status",
         500,
         NULL,
@@ -208,11 +197,6 @@ void setup()
 
 void loop()
 {
-    // collect inputs
-    temperatureSensors.loop();
-    errMsg = temperatureSensors.getErr();
-    checkErr();
-
     // adjust setpoints
     waterSetpoint = min(MAX_WATER_TEMPERATURE, temperatureSensors.outsideAir + SETPOINT_DELTA_T);
     hotSideSetpoint = min(temperatureSensors.water, temperatureSensors.hotSide);
@@ -239,7 +223,7 @@ void loop()
     }
 }
 
-void printStatusTaskHandler(void *pvParams)
+void printStatusTask(void *pvParams)
 {
     while (1)
     {

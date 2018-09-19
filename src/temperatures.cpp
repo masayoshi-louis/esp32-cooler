@@ -15,44 +15,65 @@ Temperatures::Temperatures(OneWire *oneWire)
     hotSide = 0;
     powerModule = 0;
     outsideAir = 0;
-    lastSampleTs = 0;
 }
 
 void Temperatures::loop()
 {
-    if (abs(millis() - lastSampleTs) > 2000)
+    sensors->requestTemperatures();
+    water = sensors->getTempC(_WATER_TEMP_PROBE_ADDR);
+    coldSide = sensors->getTempC(_COLD_SIDE_TEMP_PROBE_ADDR);
+    hotSide = sensors->getTempC(_HOT_SIDE_TEMP_PROBE_ADDR);
+    powerModule = sensors->getTempC(_POWER_MODULE_TEMP_PROBE_ADDR);
+    outsideAir = sensors->getTempC(_OUTSIDE_AIR_TEMP_PROBE_ADDR);
+}
+
+void Temperatures::temperaturesSampleTask(void *pvParams)
+{
+    Temperatures *t = (Temperatures *)pvParams;
+    for (;;)
     {
-        sensors->requestTemperatures();
-        water = sensors->getTempC(_WATER_TEMP_PROBE_ADDR);
-        coldSide = sensors->getTempC(_COLD_SIDE_TEMP_PROBE_ADDR);
-        hotSide = sensors->getTempC(_HOT_SIDE_TEMP_PROBE_ADDR);
-        powerModule = sensors->getTempC(_POWER_MODULE_TEMP_PROBE_ADDR);
-        outsideAir = sensors->getTempC(_OUTSIDE_AIR_TEMP_PROBE_ADDR);
-        lastSampleTs = millis();
+        t->loop();
+        String *errMsg = t->getErr();
+        if (errMsg)
+        {
+            ESP_LOGE("TEMPERATURES", "%s", errMsg->c_str());
+            exit(-1);
+        }
+        delay(2000);
     }
 }
 
-String Temperatures::getErr()
+void Temperatures::begin()
+{
+    xTaskCreate(Temperatures::temperaturesSampleTask,
+                "temperatures_sample",
+                configMINIMAL_STACK_SIZE,
+                this,
+                2,
+                NULL);
+}
+
+String *Temperatures::getErr()
 {
     if (water == -127.00)
     {
-        return String("Water sensor failure");
+        return new String("Water sensor failure");
     }
     if (coldSide == -127.00)
     {
-        return String("Cold side sensor failure");
+        return new String("Cold side sensor failure");
     }
     if (hotSide == -127.00)
     {
-        return String("Hot side sensor failure");
+        return new String("Hot side sensor failure");
     }
     if (powerModule == -127.00)
     {
-        return String("Power module sensor failure");
+        return new String("Power module sensor failure");
     }
     if (outsideAir == -127.00)
     {
-        return String("Outside air sensor failure");
+        return new String("Outside air sensor failure");
     }
-    return String();
+    return NULL;
 }

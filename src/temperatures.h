@@ -8,17 +8,18 @@ class Temperatures
 {
 private:
   DallasTemperature *sensors;
-  long long lastSampleTs;
+  void loop();
+  static void temperaturesSampleTask(void *);
 
 public:
   double water;
   double coldSide;
   double hotSide;
   double powerModule;
-  double outsideAir; 
+  double outsideAir;
   Temperatures(OneWire *oneWire);
-  void loop();
-  String getErr();
+  void begin();
+  String *getErr();
 };
 
 #endif
