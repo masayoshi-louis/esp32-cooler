@@ -4,6 +4,7 @@
 #include <esp_log.h>
 #include <esp_console.h>
 #include <argtable3/argtable3.h>
+#include <linenoise/linenoise.h>
 #include "cmd_decl.h"
 
 extern double temperatureSetpoint;
@@ -47,6 +48,7 @@ int showStatus(int argc, char **argv)
     while (true)
     {
         uart_flush_input(UART_NUM_0);
+        linenoiseClearScreen();
         printStatus();
         ESP_ERROR_CHECK(uart_get_buffered_data_len(UART_NUM_0, &uartBufferLen));
         if (uartBufferLen)
