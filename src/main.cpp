@@ -5,6 +5,7 @@
 #include <SPI.h>
 #include <PID_v1.h>
 #include <VL53L0X.h>
+#include <esp_wifi.h>
 #include "config.h"
 #include "temperatures.h"
 #include "env_sensor.h"
@@ -139,6 +140,10 @@ void setup()
     setupCli();
 #else
     Serial.begin(115200);
+#endif
+
+#ifdef CONFIG_HOSTNAME
+    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, CONFIG_HOSTNAME));
 #endif
 
     // sensor setup

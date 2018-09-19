@@ -4,6 +4,7 @@
 #define _CONFIG_H
 
 #define CONFIG_ENABLE_CLI
+#define CONFIG_HOSTNAME "esp32-cooler"
 
 #define SETPOINT_T 30
 #define SETPOINT_H 35
