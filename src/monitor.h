@@ -11,6 +11,7 @@ private:
   bool tecVoltagePoll();
   bool powerSensorPoll();
   bool pumpAndHeatSinkFanVoltagePoll();
+  static void pollTask(void *);
 
 public:
   typedef void (*VoltageListener_t)(float);

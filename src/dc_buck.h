@@ -9,6 +9,7 @@ private:
   uint16_t pwmDuty;
   uint8_t pwmPin;
   uint8_t ledcCh;
+  static void loopTask(void *);
 
 public:
   volatile float voltageSetpoint;
