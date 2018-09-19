@@ -18,6 +18,7 @@ public:
   void setup();
   void setVoltage(float value);
   void onCurrentVoltageChanged(float value);
+  float dutyCycle();
 };
 
 #endif

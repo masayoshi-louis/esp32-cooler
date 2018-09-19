@@ -63,6 +63,11 @@ void BuckConverter::loop()
     }
 }
 
+float BuckConverter::dutyCycle()
+{
+    return pwmDuty / 65535.0;
+}
+
 void buckConverterTaskHandler(void *pvParams)
 {
     BuckConverter *bc = (BuckConverter *)pvParams;
