@@ -217,7 +217,7 @@ void loop()
     ledcWrite(COOLER_FAN_PWM_CH, coolerFanPWM);
     writeTec();
     pumpPowerControl.setVoltage(12.0 / 255 * pumpVoltageLv);
-    heatSinkFanPowerControl.setVoltage(12.0 / 255 * heatSinkFanVoltageLv);
+    heatSinkFanPowerControl.setVoltage(min(12.0 / 255 * heatSinkFanVoltageLv, 10));
     ledcWrite(POWER_MODULE_FAN_PWM_CH, powerModuleFanPWM);
 
     // the others
