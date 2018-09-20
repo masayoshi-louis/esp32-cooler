@@ -137,7 +137,10 @@ void Monitor::pollTask(void *pvParams)
     Monitor *m = (Monitor *)pvParams;
     for (;;)
     {
-        delay(1);
         m->poll();
+        if (m->adcRunning)
+        {
+            delay(1);
+        }
     }
 }
