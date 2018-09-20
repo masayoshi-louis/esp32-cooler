@@ -1,18 +1,18 @@
 #include <Arduino.h>
+#include <soc/rtc.h>
 #include <U8g2lib.h>
 #include <Wire.h>
 #include <OneWire.h>
 #include <SPI.h>
 #include <PID_v1.h>
 #include <VL53L0X.h>
-#include <esp_wifi.h>
 #include "config.h"
 #include "temperatures.h"
 #include "env_sensor.h"
 #include "monitor.h"
 #include "dc_buck.h"
 #include "cli/cli.h"
-#include "esp_log.h"
+#include "mywifi.h"
 
 #define COOLER_FAN_PWM_CH 0
 #define HEAT_SINK_FAN_PWM_CH 1
@@ -143,7 +143,7 @@ void setup()
 #endif
 
 #ifdef CONFIG_HOSTNAME
-    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, CONFIG_HOSTNAME));
+    setHostName(CONFIG_HOSTNAME);
 #endif
 
     // sensor setup
@@ -230,6 +230,8 @@ void loop()
 
 void printStatus()
 {
+    printf("[ESP32]        CPU freq code=%d\n", rtc_clk_cpu_freq_get());
+    printWifiStatus();
     printf("[ENV]          temperature=%.1f humidity=%.1f\n", env_sensor::temperature, env_sensor::humidity);
     printf("[COOLER FAN]   PWM=%d PID_T=%.2f PID_H=%.2f\n", coolerFanPWM, coolerFanOutput1, coolerFanOutput2);
     printf("[TEC]          V1=%.2f V2=%.2f PID=%.2f T_SET=%.2f T_COLD=%.2f\n", monitor.tecVoltages[0], monitor.tecVoltages[1], tecOutput, coldSideSetpoint, temperatureSensors.coldSide);
