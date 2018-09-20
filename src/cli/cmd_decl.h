@@ -14,4 +14,6 @@ void register_system();
 // Register WiFi functions
 void register_wifi();
 
+void register_hostname();
+
 void register_app();

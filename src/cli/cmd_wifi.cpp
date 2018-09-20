@@ -20,6 +20,12 @@
 #include "esp_event_loop.h"
 #include "../config.h"
 
+#ifdef CONFIG_HOSTNAME
+const char *hostname = CONFIG_HOSTNAME;
+#else
+const char *hostname = NULL;
+#endif
+
 static EventGroupHandle_t wifi_event_group;
 const int CONNECTED_BIT = BIT0;
 
@@ -56,9 +62,11 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_FLASH));
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_NULL));
     ESP_ERROR_CHECK(esp_wifi_start());
-#ifdef CONFIG_HOSTNAME
-    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, CONFIG_HOSTNAME));
-#endif
+    if (hostname)
+    {
+        ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, hostname));
+    }
+
     initialized = true;
 }
 
@@ -129,4 +137,48 @@ void register_wifi()
         .argtable = &join_args};
 
     ESP_ERROR_CHECK(esp_console_cmd_register(&join_cmd));
+}
+
+static struct
+{
+    struct arg_str *name;
+    struct arg_end *end;
+} hostname_args;
+
+static int hostname_func(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **)&hostname_args);
+    if (nerrors != 0)
+    {
+        arg_print_errors(stderr, hostname_args.end, argv[0]);
+        return 1;
+    }
+    if (hostname_args.name->count > 0)
+    {
+        hostname = hostname_args.name->sval[0];
+    }
+    else if (hostname)
+    {
+        printf("%s\n", hostname);
+    }
+    else
+    {
+        printf("hostname is not set\n");
+    }
+    return 0;
+}
+
+void register_hostname()
+{
+    hostname_args.name = arg_str0(NULL, NULL, "<hostname>", "hostname of this device");
+    hostname_args.end = arg_end(2);
+
+    const esp_console_cmd_t hostname_cmd = {
+        .command = "hostname",
+        .help = "Set or get hostname",
+        .hint = NULL,
+        .func = &hostname_func,
+        .argtable = &hostname_args};
+
+    ESP_ERROR_CHECK(esp_console_cmd_register(&hostname_cmd));
 }

@@ -119,6 +119,7 @@ void setupCli()
 
     esp_console_register_help_command();
     register_system();
+    register_hostname();
     register_wifi();
     register_app();
 
