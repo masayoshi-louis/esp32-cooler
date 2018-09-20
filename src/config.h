@@ -22,8 +22,8 @@
 #define TEC_V_CH2_PIN 14       // ADC2_CH6
 #define PUMP_V_PIN 36          // ADC1_CH0
 #define HEAT_SINK_FAN_V_PIN 25 // ADC2_CH8
-#define HALL_SENSOR_PIN 39     // ADC1_CH3
-#define POWER_V_SENSOR_PIN 15  // ADC2_CH3
+#define HALL_SENSOR_CH1_PIN 39 // ADC1_CH3
+#define HALL_SENSOR_CH2_PIN 15 // ADC2_CH3
 #define TEC_ENABLE_PIN 4
 #define ONEWIRE_PIN 16
 
@@ -74,12 +74,7 @@
 // TEC hall effect current sensor
 
 #define HALL_V_PER_AMP 0.1
-#define HALL_V_CAL 1.0
-
-// Input power voltage sensor
-#define POWER_V_R1 51000.0
-#define POWER_V_R2 4700.0
-#define POWER_V_SCALE ((POWER_V_R1 + POWER_V_R2) / (POWER_V_R2))
-#define POWER_V_CAL 1.0
+#define HALL_V_CH1_CAL 1.0
+#define HALL_V_CH2_CAL 1.0
 
 #endif

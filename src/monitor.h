@@ -9,16 +9,15 @@ private:
   bool adcRunning;
   float readVoltage(uint8_t pin, float fullScale = 1.1);
   bool tecVoltagePoll();
-  bool powerSensorPoll();
+  bool hallSensorPoll();
   bool pumpAndHeatSinkFanVoltagePoll();
   static void pollTask(void *);
 
 public:
   typedef void (*VoltageListener_t)(float);
   Monitor();
-  float powerVoltage;
   float tecVoltages[2];
-  float tecCurrent;
+  float tecCurrents[2];
   float tecPower();
   void poll();
   VoltageListener_t heatSinkFanVoltageListener;
