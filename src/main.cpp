@@ -142,10 +142,6 @@ void setup()
     Serial.begin(115200);
 #endif
 
-#ifdef CONFIG_HOSTNAME
-    setHostName(CONFIG_HOSTNAME);
-#endif
-
     // sensor setup
     env_sensor::begin(DHT22_PIN);
     temperatureSensors.begin();

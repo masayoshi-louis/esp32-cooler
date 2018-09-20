@@ -18,6 +18,7 @@
 #include "esp_wifi.h"
 #include "tcpip_adapter.h"
 #include "esp_event_loop.h"
+#include "../config.h"
 
 static EventGroupHandle_t wifi_event_group;
 const int CONNECTED_BIT = BIT0;
@@ -55,6 +56,9 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_NULL));
     ESP_ERROR_CHECK(esp_wifi_start());
+#ifdef CONFIG_HOSTNAME
+    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, CONFIG_HOSTNAME));
+#endif
     initialized = true;
 }
 
@@ -112,13 +116,13 @@ static int connect(int argc, char **argv)
 void register_wifi()
 {
     join_args.timeout = arg_int0(NULL, "timeout", "<t>", "Connection timeout, ms");
-    join_args.timeout->ival[0] = 5000; // set default value
+    join_args.timeout->ival[0] = 30000; // set default value
     join_args.ssid = arg_str1(NULL, NULL, "<ssid>", "SSID of AP");
     join_args.password = arg_str0(NULL, NULL, "<pass>", "PSK of AP");
     join_args.end = arg_end(2);
 
     const esp_console_cmd_t join_cmd = {
-        .command = "join",
+        .command = "wifi-join",
         .help = "Join WiFi AP as a station",
         .hint = NULL,
         .func = &connect,
