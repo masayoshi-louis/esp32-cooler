@@ -7,10 +7,11 @@ private:
   uint8_t adcSlot;
   AdcPollHandler_t *adcPolls;
   bool adcRunning;
-  float readVoltage(uint8_t pin, float fullScale = 1.1);
   bool tecVoltagePoll();
   bool hallSensorPoll();
   bool pumpAndHeatSinkFanVoltagePoll();
+  static float readVoltage(uint8_t pin, float fullScale = 1.1);
+  static double readVoltage3v3(uint8_t pin);
   static void pollTask(void *);
 
 public:

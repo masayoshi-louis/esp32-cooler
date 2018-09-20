@@ -79,9 +79,9 @@ bool Monitor::hallSensorPoll()
     }
     else if (!adcBusy(HALL_SENSOR_CH1_PIN) && !adcBusy(HALL_SENSOR_CH2_PIN))
     {
-        hallVoltages[0] = readVoltage(HALL_SENSOR_CH1_PIN, 3.9) * HALL_V_CH1_CAL;
+        hallVoltages[0] = readVoltage3v3(HALL_SENSOR_CH1_PIN) * HALL_V_CH1_CAL;
         tecCurrents[0] = (hallVoltages[0] - 3.3 / 2) / HALL_V_PER_AMP;
-        hallVoltages[1] = readVoltage(HALL_SENSOR_CH2_PIN, 3.9) * HALL_V_CH2_CAL;
+        hallVoltages[1] = readVoltage3v3(HALL_SENSOR_CH2_PIN) * HALL_V_CH2_CAL;
         tecCurrents[1] = (hallVoltages[1] - 3.3 / 2) / HALL_V_PER_AMP;
         return false;
     }
@@ -97,6 +97,16 @@ float Monitor::readVoltage(uint8_t pin, float fullScale)
 {
     return (float)adcEnd(pin) / 4095 * fullScale;
 }
+
+// from https://github.com/G6EJD/ESP32-ADC-Accuracy-Improvement-function
+double Monitor::readVoltage3v3(uint8_t pin)
+{
+    double reading = adcEnd(pin); // Reference voltage is 3v3 so maximum reading is 3v3 = 4095 in range 0 to 4095
+    if (reading < 1 || reading > 4095)
+        return 0;
+    // return -0.000000000009824 * pow(reading,3) + 0.000000016557283 * pow(reading,2) + 0.000854596860691 * reading + 0.065440348345433;
+    return -0.000000000000016 * pow(reading, 4) + 0.000000000118171 * pow(reading, 3) - 0.000000301211691 * pow(reading, 2) + 0.001109019271794 * reading + 0.034143524634089;
+} // Added an improved polynomial, use either, comment out as required
 
 void Monitor::setup()
 {
