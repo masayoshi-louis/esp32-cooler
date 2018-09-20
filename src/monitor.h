@@ -18,6 +18,7 @@ public:
   Monitor();
   float tecVoltages[2];
   float tecCurrents[2];
+  float hallVoltages[2];
   float tecPower();
   void poll();
   VoltageListener_t heatSinkFanVoltageListener;

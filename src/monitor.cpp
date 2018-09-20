@@ -8,6 +8,7 @@ Monitor::Monitor(void)
     adcSlot = 0;
     tecVoltages[0] = tecVoltages[1] = 0;
     tecCurrents[0] = tecCurrents[1] = 0;
+    hallVoltages[0] = hallVoltages[1] = 0;
     adcPolls = (AdcPollHandler_t *)calloc(sizeof(AdcPollHandler_t), ADC_SLOTS);
     adcPolls[0] = &Monitor::tecVoltagePoll;
     adcPolls[1] = &Monitor::hallSensorPoll;
@@ -78,10 +79,10 @@ bool Monitor::hallSensorPoll()
     }
     else if (!adcBusy(HALL_SENSOR_CH1_PIN) && !adcBusy(HALL_SENSOR_CH2_PIN))
     {
-        auto v = readVoltage(HALL_SENSOR_CH1_PIN, 3.9) * HALL_V_CH1_CAL;
-        tecCurrents[0] = (v - 3.3 / 2) / HALL_V_PER_AMP;
-        v = readVoltage(HALL_SENSOR_CH2_PIN, 3.9) * HALL_V_CH2_CAL;
-        tecCurrents[1] = (v - 3.3 / 2) / HALL_V_PER_AMP;
+        hallVoltages[0] = readVoltage(HALL_SENSOR_CH1_PIN, 3.9) * HALL_V_CH1_CAL;
+        tecCurrents[0] = (hallVoltages[0] - 3.3 / 2) / HALL_V_PER_AMP;
+        hallVoltages[1] = readVoltage(HALL_SENSOR_CH2_PIN, 3.9) * HALL_V_CH2_CAL;
+        tecCurrents[1] = (hallVoltages[1] - 3.3 / 2) / HALL_V_PER_AMP;
         return false;
     }
     return true;
