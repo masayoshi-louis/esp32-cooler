@@ -21,9 +21,9 @@
 #include "../config.h"
 
 #ifdef CONFIG_HOSTNAME
-const char *hostname = CONFIG_HOSTNAME;
+static const char *hostname = CONFIG_HOSTNAME;
 #else
-const char *hostname = NULL;
+static const char *hostname = NULL;
 #endif
 
 static EventGroupHandle_t wifi_event_group;

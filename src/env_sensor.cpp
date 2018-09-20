@@ -9,7 +9,7 @@ double humidity = 0;
 
 DHT dht;
 
-void sampleTask(void *pvParams)
+static void sampleTask(void *pvParams)
 {
     for (;;)
     {
