@@ -80,9 +80,9 @@ bool Monitor::hallSensorPoll()
     else if (!adcBusy(HALL_SENSOR_CH1_PIN) && !adcBusy(HALL_SENSOR_CH2_PIN))
     {
         hallVoltages[0] = readVoltage3v3(HALL_SENSOR_CH1_PIN) * HALL_V_CH1_CAL;
-        tecCurrents[0] = (hallVoltages[0] - 3.3 / 2) / HALL_V_PER_AMP;
+        tecCurrents[0] = (hallVoltages[0] - 2.5) / HALL_V_PER_AMP;
         hallVoltages[1] = readVoltage3v3(HALL_SENSOR_CH2_PIN) * HALL_V_CH2_CAL;
-        tecCurrents[1] = (hallVoltages[1] - 3.3 / 2) / HALL_V_PER_AMP;
+        tecCurrents[1] = (hallVoltages[1] - 2.5) / HALL_V_PER_AMP;
         return false;
     }
     return true;
